@@ -1,18 +1,18 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Input } from "@/src/components/ui/input"
-import { Label } from "@/src/components/ui/label"
-import { Checkbox } from "@/src/components/ui/checkbox"
+import { useState, useEffect, ChangeEvent, KeyboardEvent } from "react"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Calculator, DollarSign, Calendar } from "lucide-react"
-import { Separator } from "@/src/components/ui/separator"
+import { Separator } from "@/components/ui/separator"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/src/components/ui/select"
+} from "@/components/ui/select"
 
 export default function TimeCalculator() {
   const [hoursPerDay, setHoursPerDay] = useState(8)
@@ -24,7 +24,7 @@ export default function TimeCalculator() {
   const [isUpdatingMonthly, setIsUpdatingMonthly] = useState(false)
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth())
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
-  const [selectedDays, setSelectedDays] = useState({
+  const [selectedDays, setSelectedDays] = useState<Record<string, boolean>>({
     monday: true,
     tuesday: true,
     wednesday: true,
@@ -79,7 +79,7 @@ export default function TimeCalculator() {
   )
 
   // Função para formatar valor monetário no estilo de app bancário
-  const formatCurrencyBankStyle = (value) => {
+  const formatCurrencyBankStyle = (value: number) => {
     // Converte para string e remove tudo exceto dígitos
     let digits = value.toString().replace(/\D/g, "")
 
@@ -107,15 +107,8 @@ export default function TimeCalculator() {
     return `${formattedInteger},${decimalPart}`
   }
 
-  // Função para converter string formatada para valor em centavos
-  const parseCurrencyToCents = (value) => {
-    // Remove tudo exceto dígitos
-    const cents = value.replace(/\D/g, "")
-    return Number.parseInt(cents) || 0
-  }
-
   // Função para converter centavos para valor decimal
-  const centsToDecimal = (cents) => {
+  const centsToDecimal = (cents: number) => {
     return cents / 100
   }
 
@@ -139,7 +132,7 @@ export default function TimeCalculator() {
       const weekdayId = weekdays.find((d) => d.index === weekday)?.id
 
       // If this weekday is selected by the user, count it
-      if (weekdayId && selectedDays[weekdayId]) {
+      if (weekdayId && selectedDays[weekdayId as keyof typeof selectedDays]) {
         workingDays++
       }
     }
@@ -153,7 +146,7 @@ export default function TimeCalculator() {
   }
 
   // Get month name
-  const getMonthName = (monthIndex) => {
+  const getMonthName = (monthIndex: number) => {
     return months.find((m) => m.value === monthIndex)?.label || ""
   }
 
@@ -192,14 +185,14 @@ export default function TimeCalculator() {
     }
   }, [isUpdatingMonthly, monthlyRate, totalHoursPerMonth])
 
-  const handleDayToggle = (day) => {
+  const handleDayToggle = (day: string) => {
     setSelectedDays((prev) => ({
       ...prev,
       [day]: !prev[day],
     }))
   }
 
-  const handleHourlyRateInputChange = (e) => {
+  const handleHourlyRateInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     // Permite apenas dígitos
     const input = e.target.value.replace(/\D/g, "")
 
@@ -210,7 +203,7 @@ export default function TimeCalculator() {
     }
 
     // Formata para exibição
-    const formattedValue = formatCurrencyBankStyle(input)
+    const formattedValue = formatCurrencyBankStyle(Number(input))
     setHourlyRateInput(formattedValue)
 
     // Converte para valor decimal para cálculos
@@ -226,7 +219,7 @@ export default function TimeCalculator() {
     setMonthlyRateInput(formatCurrencyBankStyle(monthlyRateCents))
   }
 
-  const handleMonthlyRateInputChange = (e) => {
+  const handleMonthlyRateInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     // Permite apenas dígitos
     const input = e.target.value.replace(/\D/g, "")
 
@@ -237,7 +230,7 @@ export default function TimeCalculator() {
     }
 
     // Formata para exibição
-    const formattedValue = formatCurrencyBankStyle(input)
+    const formattedValue = formatCurrencyBankStyle(Number(input))
     setMonthlyRateInput(formattedValue)
 
     // Converte para valor decimal para cálculos
@@ -264,7 +257,7 @@ export default function TimeCalculator() {
   }
 
   // Função para lidar com teclas especiais nos inputs de valor
-  const handleKeyDown = (e) => {
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     // Permite apenas teclas de navegação, dígitos, backspace, delete
     const allowedKeys = [
       "ArrowLeft",
@@ -281,7 +274,7 @@ export default function TimeCalculator() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 bg-zinc-100 p-4 rounded">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <Label
@@ -417,7 +410,7 @@ export default function TimeCalculator() {
             value={hourlyRateInput}
             onChange={handleHourlyRateInputChange}
             onKeyDown={handleKeyDown}
-            className="text-right font-mono text-2xl h-16 border-secondary/20 focus:border-primary focus:ring-primary"
+            className="text-right font-mono text-xl h-16 border-secondary/20 focus:border-primary focus:ring-primary"
           />
         </div>
 
@@ -435,7 +428,7 @@ export default function TimeCalculator() {
             value={monthlyRateInput}
             onChange={handleMonthlyRateInputChange}
             onKeyDown={handleKeyDown}
-            className="text-right font-mono text-2xl h-16 border-secondary/20 focus:border-primary focus:ring-primary"
+            className="text-right font-mono text-xl h-16 border-secondary/20 focus:border-primary focus:ring-primary"
           />
         </div>
       </div>

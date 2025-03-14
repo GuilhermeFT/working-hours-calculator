@@ -1,10 +1,11 @@
-import type { Metadata } from 'next'
-import './globals.css'
+import type { Metadata } from "next"
+import "@/styles/globals.css"
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.dev',
+  title: "Calculadora de Valor de Horas",
+  description:
+    "Calcule o valor de suas horas de trabalho com base no salário mensal desejado",
+  keywords: "horas, trabalho, calculadora, valor, salário, freelancer",
 }
 
 export default function RootLayout({
